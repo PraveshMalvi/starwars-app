@@ -1,0 +1,43 @@
+* {
+	margin: 0;
+	padding: 0;
+	body {
+		h1 {
+			font-size: clamp(2.5rem, 4vw, 4rem);
+			font-weight: 500;
+		}
+		h2 {
+			font-size: clamp(1.5rem, 2.5vw, 4rem);
+		}
+		h3 {
+			font-size: clamp(1.2rem, 1.8vw, 3rem);
+		}
+		p {
+			font-size: clamp(1.1rem, 1.2vw, 2rem);
+		}
+	}
+}
+
+::-webkit-scrollbar {
+	width: 5px;
+	height: 5px;
+  }
+  
+  ::-webkit-scrollbar-track {
+	background-color: rgba(178, 178, 178, 0.311);
+	@apply opacity-20;
+	border: 1px solid rgba(174, 162, 162, 0.596) F4F8;
+	border-radius: 10px;
+	height: 1px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+	width: 10px;
+	height: 10px;
+	cursor: pointer;
+	background: #787878;
+	border-radius: 10px;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+	display: none;
+  }
