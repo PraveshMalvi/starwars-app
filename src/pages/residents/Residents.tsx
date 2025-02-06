@@ -11,11 +11,12 @@ import {
   Tooltip,
   Modal,
   Stack,
+  Box,
 } from "@mantine/core";
 import Navbar from "../../components/Navbar";
 import { PeopleData, useAppStore, useFetchPeople } from "../../store/app.store";
 import { IconFilter, IconX, IconUser, IconEdit } from "@tabler/icons-react";
-import CommonLoader from "../../components/Loader";
+import CommonLoader from "../../components/CommonLoader";
 
 const Residents: React.FC = () => {
   const { data, isLoading, error } = useFetchPeople();
@@ -126,78 +127,88 @@ const Residents: React.FC = () => {
             <Title size={"2rem"}>Residents List</Title>
             <Text fz="sm">Total Residents: {filteredData.length}</Text>
           </div>
-          <Input
-            placeholder="Search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+          <Box
             sx={{
-              "@media (max-width: 400px)": {
-                width: "100%",
-              },
-            }}
-          />
-          <Select
-            data={uniqueGenders}
-            value={gender}
-            onChange={(value: string) => setGender(value)}
-            placeholder="Select Gender"
-            styles={{
-              input: {
-                backgroundColor: "transparent",
-                borderRadius: "4px !important",
-              },
-            }}
-            sx={{
-              "@media (max-width: 400px)": {
-                width: "100%",
-              },
-            }}
-          />
-          <Group
-            spacing="lg"
-            sx={{
-              "@media (max-width: 400px)": {
-                width: "100%",
-              },
+              display: "flex",
+              justifyContent: "start",
+              alignItems: "center",
+              gap: "10px",
+              flexWrap: "wrap",
             }}
           >
-            <Button
-              leftIcon={<IconFilter />}
-              variant="outline"
-              onClick={handleFilter}
+            <Input
+              placeholder="Search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               sx={{
                 "@media (max-width: 400px)": {
-                  width: "80%",
+                  width: "100%",
+                },
+              }}
+            />
+            <Select
+              data={uniqueGenders}
+              value={gender}
+              onChange={(value: string) => setGender(value)}
+              placeholder="Select Gender"
+              styles={{
+                input: {
+                  backgroundColor: "transparent",
+                  borderRadius: "4px !important",
+                },
+              }}
+              sx={{
+                "@media (max-width: 400px)": {
+                  width: "100%",
+                },
+              }}
+            />
+            <Group
+              spacing="lg"
+              sx={{
+                "@media (max-width: 400px)": {
+                  width: "100%",
                 },
               }}
             >
-              Filter
-            </Button>
-            <ActionIcon
-              sx={{ width: "35px", height: "35px" }}
-              onClick={clearFilters}
-              variant="filled"
-              color="red"
+              <Button
+                leftIcon={<IconFilter />}
+                variant="outline"
+                onClick={handleFilter}
+                sx={{
+                  "@media (max-width: 400px)": {
+                    width: "80%",
+                  },
+                }}
+              >
+                Filter
+              </Button>
+              <ActionIcon
+                sx={{ width: "35px", height: "35px" }}
+                onClick={clearFilters}
+                variant="filled"
+                color="red"
+              >
+                <IconX size="1.5rem" />
+              </ActionIcon>
+            </Group>
+            <Button
+              leftIcon={<IconUser />}
+              variant="gradient"
+              gradient={{ from: "#5203fc", to: "#5203fc" }}
+              onClick={() => {
+                setEditingResident(null);
+                setModalOpen(true);
+              }}
+              sx={{
+                "@media (max-width: 400px)": {
+                  width: "100%",
+                },
+              }}
             >
-              <IconX size="1.5rem" />
-            </ActionIcon>
-          </Group>
-          <Button
-            leftIcon={<IconUser />}
-            variant="gradient"
-            gradient={{ from: "#5203fc", to: "#5203fc" }}
-            onClick={() => {
-              setEditingResident(null);
-              setModalOpen(true);
-            }}
-            sx={{
-              "@media (max-width: 400px)": {
-                width: "100%",
-              },
-            }}
-          >
-            Create Resident
-          </Button>
+              Create Resident
+            </Button>
+          </Box>
         </Group>
 
         <div style={{ overflowX: "auto", maxWidth: "100%" }}>

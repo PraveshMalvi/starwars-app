@@ -26,7 +26,7 @@ import {
 } from "@tabler/icons-react";
 import { useMediaQuery } from "@mantine/hooks";
 import Navbar from "../../components/Navbar";
-import CommonLoader from "../../components/Loader";
+import CommonLoader from "../../components/CommonLoader";
 
 const fetchPlanetDetails = async (id: string) => {
   const response = await fetch(`https://swapi.dev/api/planets/${id}/`);

@@ -20,7 +20,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Flex } from "@mantine/core";
-import CommonLoader from "../../components/Loader";
+import CommonLoader from "../../components/CommonLoader";
 
 const Dashboard: React.FC = () => {
   const { data, isLoading, error } = useFetchUsers();

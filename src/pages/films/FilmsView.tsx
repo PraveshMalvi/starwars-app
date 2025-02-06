@@ -14,8 +14,10 @@ import {
   Image,
 } from "@mantine/core";
 import Navbar from "../../components/Navbar";
-import CommonLoader from "../../components/Loader";
+import CommonLoader from "../../components/CommonLoader";
 import { ramdomCharacters, randomStarships } from "../../store/staticData";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import "react-lazy-load-image-component/src/effects/blur.css";
 
 interface Film {
   episode_id: number;
@@ -171,11 +173,20 @@ const FilmsView = () => {
                         {characters?.map((char, index) => (
                           <Grid.Col xs={12} md={3}>
                             <Card shadow="sm" p={0}>
-                              <Image
-                                src={ramdomCharacters[index]}
+                              <LazyLoadImage
+                                src={
+                                  ramdomCharacters[
+                                    index % ramdomCharacters.length
+                                  ]
+                                }
+                                width={"100%"}
                                 height={160}
                                 alt={char.name}
-                                radius={"md"}
+                                effect="blur"
+                                style={{
+                                  objectFit: "cover",
+                                  objectPosition: "center",
+                                }}
                               />
                               <Text
                                 mt={5}
@@ -200,11 +211,20 @@ const FilmsView = () => {
                         {starships?.map((ship, index) => (
                           <Grid.Col xs={12} md={3}>
                             <Card shadow="sm" p={0}>
-                              <Image
-                                src={randomStarships[index]}
+                              <LazyLoadImage
+                                src={
+                                  randomStarships[
+                                    index % randomStarships.length
+                                  ]
+                                }
+                                width={"100%"}
                                 height={160}
                                 alt={ship.name}
-                                radius={"md"}
+                                effect="blur"
+                                style={{
+                                  objectFit: "cover",
+                                  objectPosition: "center",
+                                }}
                               />
                               <Text
                                 mt={5}

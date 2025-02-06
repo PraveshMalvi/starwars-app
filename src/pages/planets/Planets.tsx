@@ -9,12 +9,13 @@ import {
   Button,
   ActionIcon,
   Tooltip,
+  Box,
 } from "@mantine/core";
 import Navbar from "../../components/Navbar";
 import { PlanetData, useFetchPlanets } from "../../store/app.store";
 import { IconFilter, IconX, IconEye } from "@tabler/icons-react";
 import { Link } from "react-router-dom";
-import CommonLoader from "../../components/Loader";
+import CommonLoader from "../../components/CommonLoader";
 
 const Planets: React.FC = () => {
   const { data, isLoading, error } = useFetchPlanets();
@@ -75,55 +76,65 @@ const Planets: React.FC = () => {
             <Title size={"2rem"}>Planets List</Title>
             <Text fz="sm">Total Planets: {filteredData.length}</Text>
           </div>
-          <Input
-            placeholder="Search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+          <Box
             sx={{
-                "@media (max-width: 400px)": {
-                  width: "100%",
-                },
-              }}
-          />
-          <Select
-            data={uniqueClimates}
-            value={climate}
-            onChange={(value: string) => setClimate(value)}
-            placeholder="Select Climate"
-            styles={{
-              input: {
-                backgroundColor: "transparent",
-                borderRadius: "4px !important",
-              },
+              display: "flex",
+              justifyContent: "start",
+              alignItems: "center",
+              gap: "10px",
+              flexWrap: "wrap",
             }}
-            sx={{
+          >
+            <Input
+              placeholder="Search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              sx={{
                 "@media (max-width: 400px)": {
                   width: "100%",
                 },
               }}
-          />
+            />
+            <Select
+              data={uniqueClimates}
+              value={climate}
+              onChange={(value: string) => setClimate(value)}
+              placeholder="Select Climate"
+              styles={{
+                input: {
+                  backgroundColor: "transparent",
+                  borderRadius: "4px !important",
+                },
+              }}
+              sx={{
+                "@media (max-width: 400px)": {
+                  width: "100%",
+                },
+              }}
+            />
 
-          <Button
-            leftIcon={<IconFilter />}
-            variant="outline"
-            onClick={handleFilter}
-            sx={{
+            <Button
+              leftIcon={<IconFilter />}
+              variant="outline"
+              onClick={handleFilter}
+              sx={{
                 "@media (max-width: 400px)": {
                   width: "80%",
                 },
               }}
-          >
-            Filter
-          </Button>
+            >
+              Filter
+            </Button>
 
-          <ActionIcon
-            sx={{ width: "35px", height: "35px" }}
-            onClick={clearFilters}
-            variant="filled"
-            color="red"
-          >
-            <IconX size="1.5rem" />
-          </ActionIcon>
+            <ActionIcon
+              sx={{ width: "35px", height: "35px" }}
+              onClick={clearFilters}
+              variant="filled"
+              color="red"
+            >
+              <IconX size="1.5rem" />
+            </ActionIcon>
+          </Box>
         </Group>
 
         <div style={{ overflowX: "auto", maxWidth: "100%" }}>
@@ -150,7 +161,7 @@ const Planets: React.FC = () => {
             </thead>
             <tbody>
               {isLoading ? (
-                <CommonLoader/>
+                <CommonLoader />
               ) : filteredData.length === 0 ? (
                 <tr>
                   <td

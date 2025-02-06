@@ -1,0 +1,1 @@
+import{j as o,N as r}from"./index-3f8c008f.js";import{u as s}from"./app.store-a79300d8.js";const n=({children:e})=>s(t=>t.user)?e:o.jsxDEV(r,{to:"/login"},void 0,!1,{fileName:"D:/interview-codebase/interview/src/components/PrivateRoute.tsx",lineNumber:11,columnNumber:28},globalThis);export{n as default};
