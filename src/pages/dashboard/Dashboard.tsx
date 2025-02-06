@@ -1,12 +1,5 @@
 import { useState } from "react";
-import {
-  Title,
-  Table,
-  Grid,
-  Group,
-  Input,
-  Text,
-} from "@mantine/core";
+import { Title, Table, Grid, Group, Input, Text } from "@mantine/core";
 import Navbar from "../../components/Navbar";
 import { useFetchUsers } from "../../store/app.store";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
@@ -25,6 +18,8 @@ import CommonLoader from "../../components/CommonLoader";
 const Dashboard: React.FC = () => {
   const { data, isLoading, error } = useFetchUsers();
   const [search, setSearch] = useState("");
+
+  if (isLoading) return <CommonLoader />;
 
   if (!data) return null;
 
@@ -46,11 +41,6 @@ const Dashboard: React.FC = () => {
     city,
     count,
   }));
-
-  if (isLoading)
-    return (
-      <CommonLoader/>
-    );
 
   if (error) return <p>Error loading data.</p>;
 
@@ -113,8 +103,8 @@ const Dashboard: React.FC = () => {
                   </td>
                 </tr>
               ) : (
-                filteredUsers.map((user) => (
-                  <tr key={user.id}>
+                filteredUsers.map((user, index) => (
+                  <tr key={index}>
                     <td>{user.name}</td>
                     <td>{user.email}</td>
                     <td>{user.address?.city ?? "Unknown"}</td>
@@ -136,11 +126,14 @@ const Dashboard: React.FC = () => {
               zoom={2}
               style={{ height: "400px", width: "100%", zIndex: 98 }}
             >
-              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" zIndex={98} />
-              {filteredUsers.map((user) =>
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                zIndex={98}
+              />
+              {filteredUsers.map((user, index) =>
                 user.address?.geo ? (
                   <Marker
-                    key={user.id}
+                    key={index}
                     position={[
                       parseFloat(user.address.geo.lat),
                       parseFloat(user.address.geo.lng),
@@ -155,7 +148,7 @@ const Dashboard: React.FC = () => {
             </MapContainer>
           </Grid.Col>
 
-          <Grid.Col xs={12} md={6} sx={{overflowX: "auto"}}>
+          <Grid.Col xs={12} md={6} sx={{ overflowX: "auto" }}>
             <Title sx={{ marginBottom: "5px" }} order={3} mt="lg">
               Users Per City
             </Title>

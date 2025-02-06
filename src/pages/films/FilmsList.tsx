@@ -19,6 +19,7 @@ import { IconHeart, IconHeartFilled } from "@tabler/icons-react";
 import { randomStarships } from "../../store/staticData";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
+import CommonLoader from "../../components/CommonLoader";
 
 const FilmsList = () => {
   const { data, isLoading, isError } = useFetchFilms();
@@ -27,6 +28,8 @@ const FilmsList = () => {
   const { favourites, addFavourite, removeFavourite } = useAppStore();
 
   const [showFavourites, setShowFavourites] = useState(false);
+
+  if (isLoading) return <CommonLoader />;
 
   if (!data) return null;
 

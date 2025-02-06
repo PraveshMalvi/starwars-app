@@ -48,6 +48,8 @@ const Residents: React.FC = () => {
     }
   }, [people]);
 
+  if (isLoading) return <CommonLoader />;
+
   if (!data) return null;
 
   const uniqueGenders = Array.from(
@@ -236,9 +238,7 @@ const Residents: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {isLoading ? (
-                <CommonLoader />
-              ) : filteredData.length === 0 ? (
+              {filteredData.length === 0 ? (
                 <tr>
                   <td
                     colSpan={9}
@@ -250,8 +250,8 @@ const Residents: React.FC = () => {
                   </td>
                 </tr>
               ) : (
-                filteredData.map((resident) => (
-                  <tr key={resident.id}>
+                filteredData.map((resident, index) => (
+                  <tr key={index}>
                     <td>{resident.name}</td>
                     <td>{resident.height}</td>
                     <td>{resident.mass}</td>

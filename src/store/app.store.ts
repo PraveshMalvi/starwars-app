@@ -2,15 +2,6 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { useQuery } from "@tanstack/react-query";
 
-// ✅ Fake JWT token utility
-const generateFakeJwt = (email: string) => {
-  const header = { alg: "HS256", typ: "JWT" };
-  const payload = { email, exp: Date.now() + 3600000 }; // 1-hour expiration
-  const base64Encode = (obj: any) => btoa(JSON.stringify(obj)); // Base64 encoding
-  return `${base64Encode(header)}.${base64Encode(payload)}`;
-};
-
-// ✅ Auth Store (Persisting Login State)
 interface User {
   email: string;
   token: string;
@@ -26,30 +17,27 @@ export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       user: null,
-
       login: async (email, password) => {
         const hardcodedUser = {
-          email: "admin@example.com",
+          email: "admin@starwars.com",
           password: "admin123",
         };
         if (
           email === hardcodedUser.email &&
           password === hardcodedUser.password
         ) {
-          const token = generateFakeJwt(email);
+          const token = btoa(email);
           set({ user: { email, token } });
           return true;
         }
         return false;
       },
-
       logout: () => set({ user: null }),
     }),
     { name: "auth-storage" }
   )
 );
 
-// ✅ Interfaces
 export interface UserData {
   id: number;
   name: string;
@@ -87,16 +75,9 @@ export interface PeopleData {
   gender: string;
 }
 
-// ✅ App Store (Persisting Favourites & People)
 interface AppState {
-  users: UserData[];
-  planets: PlanetData[];
-  films: FilmData[];
   favourites: number[];
   people: PeopleData[];
-  setUsers: (users: UserData[]) => void;
-  setPlanets: (planets: PlanetData[]) => void;
-  setFilms: (films: FilmData[]) => void;
   addFavourite: (id: number) => void;
   removeFavourite: (id: number) => void;
   setPeople: (people: PeopleData[]) => void;
@@ -108,19 +89,11 @@ interface AppState {
 export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
-      users: [],
-      planets: [],
-      films: [],
       favourites: [],
       people: [],
 
-      setUsers: (users) => set({ users }),
-      setPlanets: (planets) => set({ planets }),
-      setFilms: (films) => set({ films }),
-
       addFavourite: (id) =>
         set((state) => ({ favourites: [...state.favourites, id] })),
-
       removeFavourite: (id) =>
         set((state) => ({
           favourites: state.favourites.filter((fav) => fav !== id),
@@ -143,9 +116,6 @@ export const useAppStore = create<AppState>()(
       clearStorage: () => {
         localStorage.removeItem("app-storage");
         set({
-          users: [],
-          planets: [],
-          films: [],
           favourites: [],
           people: [],
         });
@@ -155,7 +125,6 @@ export const useAppStore = create<AppState>()(
   )
 );
 
-// ✅ Fetch API Functions
 const fetchUsers = async (): Promise<UserData[]> => {
   const response = await fetch("https://jsonplaceholder.typicode.com/users");
   if (!response.ok) throw new Error("Failed to fetch users");
@@ -186,39 +155,24 @@ const fetchPeople = async (): Promise<PeopleData[]> => {
   }));
 };
 
-const fetchPersonById = async (id: number): Promise<PeopleData> => {
-  const response = await fetch(`https://swapi.dev/api/people/${id}`);
-  if (!response.ok) throw new Error("Failed to fetch person details");
-  return response.json();
-};
+export const useFetchUsers = () =>
+  useQuery({ queryKey: ["users"], queryFn: fetchUsers });
 
-// ✅ Custom Hooks to Fetch & Store Data
-export const useFetchUsers = () => {
-  const setUsers = useAppStore((state) => state.setUsers);
-  return useQuery({
-    queryKey: ["users"],
-    queryFn: fetchUsers,
-    onSuccess: setUsers,
-  });
-};
-
-export const useFetchPlanets = () => {
-  const setPlanets = useAppStore((state) => state.setPlanets);
-  return useQuery({
+export const useFetchPlanets = () =>
+  useQuery({
     queryKey: ["planets"],
     queryFn: fetchPlanets,
-    onSuccess: setPlanets,
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
   });
-};
 
-export const useFetchFilms = () => {
-  const setFilms = useAppStore((state) => state.setFilms);
-  return useQuery({
+export const useFetchFilms = () =>
+  useQuery({
     queryKey: ["films"],
     queryFn: fetchFilms,
-    onSuccess: setFilms,
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
   });
-};
 
 export const useFetchPeople = () => {
   const setPeople = useAppStore((state) => state.setPeople);
@@ -226,12 +180,7 @@ export const useFetchPeople = () => {
     queryKey: ["people"],
     queryFn: fetchPeople,
     onSuccess: setPeople,
-  });
-};
-
-export const useFetchPersonById = (id: number) => {
-  return useQuery({
-    queryKey: ["person", id],
-    queryFn: () => fetchPersonById(id),
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
   });
 };

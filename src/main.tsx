@@ -2,12 +2,12 @@ import { lazy, StrictMode, Suspense } from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-// import App from "./App";
 
-const App = lazy(() => import("./App"));
-const CommonLoader = lazy(() => import("./components/CommonLoader"));
-const PrivateRoute = lazy(() => import("./components/PrivateRoute"));
-const Login = lazy(() => import("./pages/landing/Login"));
+import App from "./App";
+import CommonLoader from "./components/CommonLoader";
+import PrivateRoute from "./components/PrivateRoute";
+import Login from "./pages/landing/Login";
+
 const Dashboard = lazy(() => import("./pages/dashboard/Dashboard"));
 const Planets = lazy(() => import("./pages/planets/Planets"));
 const PlanetsView = lazy(() => import("./pages/planets/PlanetsView"));
@@ -18,11 +18,7 @@ const Residents = lazy(() => import("./pages/residents/Residents"));
 const routes = [
   {
     path: "/",
-    element: (
-      <Suspense fallback={<CommonLoader />}>
-        <App />
-      </Suspense>
-    ),
+    element: <App />,
     children: [
       {
         path: "/",

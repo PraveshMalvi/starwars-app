@@ -22,12 +22,14 @@ const Planets: React.FC = () => {
   const [search, setSearch] = useState("");
   const [climate, setClimate] = useState("");
   const [filteredData, setFilteredData] = useState<PlanetData[]>([]);
-
+  
   useEffect(() => {
     if (data && data.length > 0) {
       setFilteredData(data);
     }
   }, [data]);
+  
+  if (isLoading) return <CommonLoader />;
 
   if (!data) return null;
 
@@ -160,9 +162,7 @@ const Planets: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {isLoading ? (
-                <CommonLoader />
-              ) : filteredData.length === 0 ? (
+              {filteredData.length === 0 ? (
                 <tr>
                   <td
                     colSpan={7}

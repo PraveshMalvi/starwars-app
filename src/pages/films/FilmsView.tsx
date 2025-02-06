@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import React, { useState, useMemo } from "react";
+import { useQuery, useQueries } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import {
   Container,
@@ -11,7 +11,6 @@ import {
   Anchor,
   Card,
   Grid,
-  Image,
 } from "@mantine/core";
 import Navbar from "../../components/Navbar";
 import CommonLoader from "../../components/CommonLoader";
@@ -38,13 +37,15 @@ const fetchFilm = async (id: string): Promise<Film> => {
   return response.json();
 };
 
-const fetchData = async (urls: string[]) => {
-  const requests = urls.map((url) => fetch(url).then((res) => res.json()));
-  return Promise.all(requests);
+const fetchMultiple = async (urls: string[]) => {
+  if (!urls?.length) return [];
+  const responses = await Promise.all(urls.map((url) => fetch(url)));
+  return Promise.all(responses.map((res) => res.json()));
 };
 
 const FilmsView = () => {
   const { id } = useParams<{ id: string }>();
+  const [activeTab, setActiveTab] = useState<string>("characters");
 
   const { data, isLoading, isError } = useQuery<Film>({
     queryKey: ["film", id],
@@ -52,36 +53,31 @@ const FilmsView = () => {
     enabled: !!id,
   });
 
-  const [activeTab, setActiveTab] = useState<string>("characters");
-
-  const { data: characters, isLoading: loadingCharacters } = useQuery({
-    queryKey: ["characters", data?.characters],
-    queryFn: () => fetchData(data!.characters),
-    enabled: activeTab === "characters" && !!data?.characters,
+  const results = useQueries({
+    queries: (data
+      ? ["characters", "starships", "vehicles", "species"].map((key) => ({
+          queryKey: [key, data[key as keyof Film]],
+          queryFn: () => fetchMultiple(data[key as keyof Film] as string[]),
+          enabled: !!(data[key as keyof Film] as string[])?.length,
+        }))
+      : []) as {
+      queryKey: (string | number | string[])[];
+      queryFn: () => Promise<any[]>;
+      enabled: boolean;
+    }[],
   });
 
-  const { data: starships, isLoading: loadingStarships } = useQuery({
-    queryKey: ["starships", data?.starships],
-    queryFn: () => fetchData(data!.starships),
-    enabled: activeTab === "starships" && !!data?.starships,
-  });
+  const [characters, starships, vehicles, species] = useMemo(
+    () => results.map((result) => result?.data || []),
+    [results]
+  );
 
-  const { data: vehicles, isLoading: loadingVehicles } = useQuery({
-    queryKey: ["vehicles", data?.vehicles],
-    queryFn: () => fetchData(data!.vehicles),
-    enabled: activeTab === "vehicles" && !!data?.vehicles,
-  });
-
-  const { data: species, isLoading: loadingSpecies } = useQuery({
-    queryKey: ["species", data?.species],
-    queryFn: () => fetchData(data!.species),
-    enabled: activeTab === "species" && !!data?.species,
-  });
+  if (isLoading) return <CommonLoader />;
 
   if (isError || !data) {
     return (
       <Container>
-        <Text color="red"></Text>
+        <Text color="red">Error loading film details</Text>
       </Container>
     );
   }
@@ -111,14 +107,11 @@ const FilmsView = () => {
         }}
       >
         <Breadcrumbs>{crumbLinks}</Breadcrumbs>
-        {isLoading ? (
-          <CommonLoader />
-        ) : (
+        {
           <div>
             <Title order={2} align="center" mb="lg" mt={"lg"}>
               {data.title} (Episode {data.episode_id})
             </Title>
-
             <Text align="center" size="sm" color="dimmed">
               Directed by {data.director} | Produced by {data.producer} |
               Released on {data.release_date}
@@ -166,12 +159,12 @@ const FilmsView = () => {
                   </div>
 
                   <Tabs.Panel value="characters">
-                    {loadingCharacters ? (
+                    {results[0]?.isLoading ? (
                       <CommonLoader />
                     ) : (
                       <Grid gutter="xl" mt={20}>
                         {characters?.map((char, index) => (
-                          <Grid.Col xs={12} md={3}>
+                          <Grid.Col xs={12} md={3} key={index}>
                             <Card shadow="sm" p={0}>
                               <LazyLoadImage
                                 src={
@@ -204,12 +197,12 @@ const FilmsView = () => {
                   </Tabs.Panel>
 
                   <Tabs.Panel value="starships">
-                    {loadingStarships ? (
+                    {results[1]?.isLoading ? (
                       <CommonLoader />
                     ) : (
                       <Grid gutter="xl" mt={20}>
                         {starships?.map((ship, index) => (
-                          <Grid.Col xs={12} md={3}>
+                          <Grid.Col xs={12} md={3} key={index}>
                             <Card shadow="sm" p={0}>
                               <LazyLoadImage
                                 src={
@@ -242,7 +235,7 @@ const FilmsView = () => {
                   </Tabs.Panel>
 
                   <Tabs.Panel value="vehicles">
-                    {loadingVehicles ? (
+                    {results[2]?.isLoading ? (
                       <CommonLoader />
                     ) : (
                       <List spacing="sm" mt="md">
@@ -256,7 +249,7 @@ const FilmsView = () => {
                   </Tabs.Panel>
 
                   <Tabs.Panel value="species">
-                    {loadingSpecies ? (
+                    {results[3]?.isLoading ? (
                       <CommonLoader />
                     ) : (
                       <List spacing="sm" mt="md">
@@ -270,7 +263,7 @@ const FilmsView = () => {
               </Grid.Col>
             </Grid>
           </div>
-        )}
+        }
       </main>
     </>
   );
